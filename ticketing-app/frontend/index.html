@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ticketing App</title>
+    <style>
+      body { font-family: Arial, sans-serif; max-width: 760px; margin: 2rem auto; }
+      form { display: grid; gap: 0.75rem; margin-bottom: 1.5rem; }
+      input, button { padding: 0.6rem; font-size: 1rem; }
+      .card { border: 1px solid #ddd; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem; }
+      .muted { color: #666; }
+    </style>
+  </head>
+  <body>
+    <h1>Event Tickets</h1>
+
+    <form id="eventForm">
+      <input id="title" placeholder="Event title" required />
+      <input id="location" placeholder="Location" required />
+      <input id="eventDate" type="date" required />
+      <button type="submit">Create Event</button>
+    </form>
+
+    <h2>Events</h2>
+    <div id="events"></div>
+
+    <script>
+      const apiBase = '/api';
+      const form = document.getElementById('eventForm');
+      const eventsContainer = document.getElementById('events');
+
+      async function loadEvents() {
+        const res = await fetch(`${apiBase}/events`);
+        const data = await res.json();
+        eventsContainer.innerHTML = data.map((event) => `
+          <div class="card">
+            <strong>${event.title}</strong><br>
+            <span>${event.location}</span><br>
+            <span class="muted">${event.event_date}</span>
+          </div>
+        `).join('');
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+          title: document.getElementById('title').value,
+          location: document.getElementById('location').value,
+          eventDate: document.getElementById('eventDate').value
+        };
+
+        await fetch(`${apiBase}/events`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        form.reset();
+        await loadEvents();
+      });
+
+      loadEvents();
+    </script>
+  </body>
+</html>

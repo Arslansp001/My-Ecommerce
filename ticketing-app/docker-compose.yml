@@ -1,0 +1,16 @@
+# Optional reference only (user requested no compose for runtime)
+services:
+  backend_db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ticketing
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+  backend:
+    build: ./backend
+    depends_on:
+      - backend_db
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
